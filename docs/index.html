@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Marx的图形化学习文档</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="images\ico\favicon.svg" type="image\svg+xml">
+  <link rel="alternate icon" href="images\ico\favicon.ico" type="image\x-icon">
+  <link rel="shortcut icon" href="images\ico\favicon.ico" type="image\x-icon">
+  <link rel="icon" type="image\png" sizes="96x96" href="images\ico\favicon-96x96.png">
+  <link rel="apple-touch-icon" href="images\ico\apple-touch-icon.png">
+  <link rel="manifest" href="images\ico\site.webmanifest">
+  <meta name="theme-color" content="#42b983">
+  <meta name="msapplication-config" content="images\ico\browserconfig.xml" >
+  <meta name="msapplication-TileColor" content="#42b983">
+  <meta name="msapplication-TileImage" content="images\ico\web-app-manifest-192x192.png">
+  <link rel="stylesheet" href="dist\themes\core.min.css">
+  <style>
+    .markdown-section a {
+      color: var(--theme-color, #42b983);
+      text-decoration: none;
+      background: linear-gradient(transparent 60%, color-mix(in srgb, var(--theme-color, #42b983) 20%, transparent) 40%);
+      padding: 0 2px;
+      transition: all 0.3s ease;
+    }
+    .markdown-section a:hover {
+      color: var(--theme-color-6, #3aa876);
+      background: linear-gradient(transparent 50%, color-mix(in srgb, var(--theme-color, #42b983) 30%, transparent) 50%);
+    }
+    :root {
+      --sidebar-width: 220px;
+      --content-max-width: 100ch;
+      --content-margin-inline: 50px;
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: color-mix(in srgb, var(--color-bg) 95%, var(--color-text) 5%);
+      color: var(--color-text);
+      border: 1px solid color-mix(in srgb, var(--border-color) 40%, transparent 60%);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      opacity: 0.9;
+      backdrop-filter: blur(4px);
+    }
+    
+    .theme-toggle:hover {
+      background: color-mix(in srgb, var(--color-bg) 90%, var(--color-text) 10%);
+      border-color: color-mix(in srgb, var(--border-color) 70%, transparent 30%);
+      opacity: 1;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dark-mode .theme-toggle {
+      background: color-mix(in srgb, var(--color-bg) 95%, var(--color-text) 5%);
+      color: var(--color-text);
+      border-color: color-mix(in srgb, var(--border-color) 40%, transparent 60%);
+    }
+    
+    .dark-mode .theme-toggle:hover {
+      background: color-mix(in srgb, var(--color-bg) 90%, var(--color-text) 10%);
+      border-color: color-mix(in srgb, var(--border-color) 70%, transparent 30%);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle">🌙 切换到深色</button>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'Marx的图形化学习文档',
+      repo: '',
+      loadSidebar: true,
+      loadNavbar: true,
+      coverpage: true,
+      subMaxLevel: 2,
+      auto2top: true,
+      pagination: {
+        previousText: '上一卷',
+        nextText: '下一卷',
+        crossChapter: true,
+        crossChapterText: false
+      },
+      search: {
+        placeholder: '请输入关键词搜索',
+        noData: '找不到结果',
+        depth: 3,
+      },
+      requestHeaders: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache'
+      },
+      plugins: [
+        function(hook, vm) {
+          hook.beforeEach(function(content) {
+            return content;
+          });
+          hook.mounted(function() {
+            setTimeout(function() {
+              const sidebar = document.querySelector('.sidebar');
+              if (sidebar) {
+                sidebar.style.visibility = 'visible';
+              }
+            }, 500);
+          });
+        },
+        function(hook, vm) {
+          hook.init(function() {
+            if (vm.config.loadSidebar === true) {
+              vm.config.loadSidebar = function(callback) {
+                const timestamp = new Date().getTime();
+                const url = `_sidebar.md?nocache=${timestamp}`;
+                fetch(url, {
+                  cache: 'no-store',
+                  headers: {
+                    'Cache-Control': 'no-cache'
+                  }
+                })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+                  return response.text();
+                })
+                .then(text => {
+                  callback(text);
+                })
+                .catch(error => {
+                  callback('# 侧边栏\n\n- [首页](README.md)\n- [运动](Motion.md)\n- [外观](Looks.md)');
+                });
+              };
+            }
+          });
+        }
+      ]
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      const themeToggle = document.getElementById('themeToggle');
+      const body = document.body;
+      const root = document.documentElement;
+      const darkTheme = {
+        '--color-bg': '#1a1a1a',
+        '--color-text': '#e0e0e0',
+        '--color-mono-min': '#1a1a1a',
+        '--color-mono-max': '#e0e0e0',
+        '--strong-color': '#ffffff',
+        '--border-color': '#333333',
+        '--code-bg': '#2d2d2d',
+        '--sidebar-bg': '#1e1e1e',
+        '--sidebar-border-color': '#333333',
+        '--sidebar-link-color': '#cccccc',
+        '--sidebar-group-title-color': '#ffffff',
+        '--sidebar-name-color': '#ffffff',
+        '--navbar-link-color': '#cccccc',
+        '--form-element-bg': '#2d2d2d',
+        '--form-element-border-color': '#444444',
+        '--table-row-alt-bg': '#2d2d2d',
+        '--callout-bg': '#2d2d2d'
+      };
+      const lightTheme = {
+        '--color-bg': '#fff',
+        '--color-text': '#333',
+        '--color-mono-min': '#fff',
+        '--color-mono-max': '#333',
+        '--strong-color': 'color-mix(in srgb, #333, black 35%)',
+        '--border-color': 'var(--color-mono-2)',
+        '--code-bg': 'var(--color-mono-1)',
+        '--sidebar-bg': 'var(--color-bg)',
+        '--sidebar-border-color': 'var(--border-color)',
+        '--sidebar-link-color': 'var(--color-text)',
+        '--sidebar-group-title-color': 'var(--strong-color)',
+        '--sidebar-name-color': 'var(--strong-color)',
+        '--navbar-link-color': '',
+        '--form-element-bg': 'var(--color-mono-1)',
+        '--form-element-border-color': 'var(--color-mono-3)',
+        '--table-row-alt-bg': 'var(--color-mono-1)',
+        '--callout-bg': ''
+      };
+      const savedTheme = localStorage.getItem('docsify-theme');
+      if (savedTheme === 'dark') {
+        applyTheme(darkTheme);
+        body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️ 切换到浅色';
+      } else {
+        applyTheme(lightTheme);
+        body.classList.remove('dark-mode');
+        themeToggle.textContent = '🌙 切换到深色';
+      }
+      themeToggle.addEventListener('click', function() {
+        const currentBg = getComputedStyle(root).getPropertyValue('--color-bg').trim();
+        if (currentBg === '#1a1a1a') {
+          applyTheme(lightTheme);
+          body.classList.remove('dark-mode');
+          themeToggle.textContent = '🌙 切换到深色';
+          localStorage.setItem('docsify-theme', 'light');
+        } else {
+          applyTheme(darkTheme);
+          body.classList.add('dark-mode');
+          themeToggle.textContent = '☀️ 切换到浅色';
+          localStorage.setItem('docsify-theme', 'dark');
+        }
+      });
+      function applyTheme(theme) {
+        Object.keys(theme).forEach(variable => {
+          root.style.setProperty(variable, theme[variable]);
+        });
+      }
+    });
+  </script>
+  <script src="dist\docsify.min.js"></script>
+  <script src="dist\plugins\search.min.js"></script>
+  <script src="dist\plugins\docsify-pagination.min.js"></script>
+</body>
+</html>
